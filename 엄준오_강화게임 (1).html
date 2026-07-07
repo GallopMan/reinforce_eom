@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>엄준오 강화의 방</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Cinzel:wght@600;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0910;
+    --panel:#161220;
+    --line: rgba(232,169,59,0.18);
+    --ember:#ff7a3c;
+    --gold:#e8a93b;
+    --gold-bright:#ffd066;
+    --steel:#7c8aa0;
+    --crimson:#e14b4b;
+    --neon-green:#39ff8a;
+    --parchment:#f4e9d0;
+    --parchment-dim:#c9bd9e;
+    --font-display:'Song Myung', serif;
+    --font-num:'Cinzel', serif;
+    --font-body:'Noto Sans KR', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(232,169,59,0.10), transparent 55%),
+      radial-gradient(ellipse at 50% 110%, rgba(120,20,20,0.14), transparent 60%),
+      var(--bg);
+    color:var(--parchment);
+    font-family:var(--font-body);
+    display:flex;
+    justify-content:center;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .stage{ width:100%; max-width:460px; padding:28px 18px 40px; position:relative; z-index:2; }
+  header{ text-align:center; margin-bottom:16px; }
+  header .eyebrow{ font-size:11px; letter-spacing:0.35em; color:var(--gold); opacity:0.75; font-weight:700; }
+  header h1{ font-family:var(--font-display); font-size:32px; margin:6px 0 4px; letter-spacing:0.04em; text-shadow:0 0 18px rgba(232,169,59,0.35); }
+  header p{ margin:0; font-size:12px; color:var(--parchment-dim); }
+
+  .forge-wrap{ position:relative; width:280px; height:280px; margin:20px auto 12px; display:flex; align-items:center; justify-content:center; }
+  .rune-ring{ position:absolute; inset:0; border-radius:50%; border:1.5px dashed var(--gold); opacity:0.35; animation:spin 18s linear infinite; }
+  .rune-ring.inner{ inset:22px; border-style:dotted; border-color:var(--ember); animation-duration:12s; animation-direction:reverse; opacity:0.4; }
+  .rune-glow{ position:absolute; inset:34px; border-radius:50%; background:radial-gradient(circle, rgba(232,169,59,var(--glow,0.12)), transparent 70%); filter:blur(2px); transition:opacity 0.4s; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .card{
+    position:relative; width:190px; height:270px; border-radius:16px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:14px 10px; text-align:center;
+    border:2px solid var(--card-border, #a97a34);
+    background:var(--card-bg, linear-gradient(160deg,#3a2a16,#1c140a));
+    box-shadow:0 0 0 1px rgba(0,0,0,0.4) inset, 0 12px 30px rgba(0,0,0,0.55), 0 0 var(--card-glow-size,0px) var(--card-glow-color,transparent);
+    transition:box-shadow 0.4s ease, border-color 0.4s ease, background 0.4s ease;
+  }
+  .card .tier-label{ font-size:10px; letter-spacing:0.25em; font-weight:700; color:var(--tier-color,#c9a15a); margin-bottom:6px; }
+  .card .name{ font-family:var(--font-display); font-size:24px; line-height:1.1; text-shadow:0 1px 3px rgba(0,0,0,0.6); }
+  .card .role{ font-size:10.5px; color:var(--parchment-dim); margin-top:2px; margin-bottom:6px; }
+  .card .ovr{ font-size:11px; color:var(--parchment-dim); margin-bottom:4px; }
+  .card .ovr b{ color:var(--tier-color,#e8a93b); font-family:var(--font-num); font-size:14px; }
+  .card .level-badge{ font-family:var(--font-num); font-size:34px; font-weight:800; color:var(--tier-color,#e8a93b); text-shadow:0 0 14px rgba(232,169,59,0.55); margin:2px 0 6px; }
+  .card .stars{ display:flex; gap:2px; justify-content:center; flex-wrap:wrap; max-width:160px; }
+  .card .stars span{ font-size:11px; color:#3a3345; }
+  .card .stars span.filled{ color:var(--tier-color,#e8a93b); text-shadow:0 0 6px rgba(232,169,59,0.6); }
+
+  .card.shake{ animation:cardshake 0.5s; }
+  @keyframes cardshake{ 10%,90%{transform:translateX(-2px) rotate(-0.5deg);} 20%,80%{transform:translateX(4px) rotate(0.5deg);} 30%,50%,70%{transform:translateX(-8px) rotate(-1deg);} 40%,60%{transform:translateX(8px) rotate(1deg);} }
+  .card.pulse{ animation:cardpulse 0.6s; }
+  @keyframes cardpulse{ 0%{transform:scale(1);} 35%{transform:scale(1.09);} 100%{transform:scale(1);} }
+  .card.crack{ animation:cardcrack 0.55s; }
+  @keyframes cardcrack{ 0%{transform:scale(1) rotate(0deg); filter:brightness(1);} 20%{transform:scale(0.96) rotate(-2deg); filter:brightness(1.6) saturate(0);} 45%{transform:scale(1.03) rotate(2deg); filter:brightness(0.7);} 70%{transform:scale(0.9) rotate(-1deg);} 100%{transform:scale(1) rotate(0deg); filter:brightness(1);} }
+  .card.point-armed{
+    border-color:var(--neon-green) !important;
+    animation:neonpulse 1.2s ease-in-out infinite;
+  }
+  @keyframes neonpulse{
+    0%,100%{ box-shadow:0 0 0 1px rgba(0,0,0,0.4) inset, 0 12px 30px rgba(0,0,0,0.55), 0 0 20px 4px rgba(57,255,138,0.5); }
+    50%{ box-shadow:0 0 0 1px rgba(0,0,0,0.4) inset, 0 12px 30px rgba(0,0,0,0.55), 0 0 40px 10px rgba(57,255,138,0.9); }
+  }
+
+  .prob-info{ display:flex; justify-content:center; gap:16px; margin:4px 0 6px; font-size:12.5px; color:var(--parchment-dim); flex-wrap:wrap; }
+  .prob-info b{ color:var(--gold-bright); font-weight:700; }
+  .fail-toggle{ display:block; margin:0 auto 14px; background:none; border:none; color:var(--steel); font-size:11.5px; text-decoration:underline; cursor:pointer; font-family:var(--font-body); }
+  .fail-breakdown{ display:none; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin:0 0 14px; font-size:12px; color:var(--parchment-dim); }
+  .fail-breakdown.open{ display:block; }
+  .fail-breakdown .row{ display:flex; justify-content:space-between; padding:2px 0; }
+  .fail-breakdown .row b{ color:var(--crimson); }
+  .fail-breakdown h3{ margin:0 0 6px; font-size:11px; letter-spacing:0.15em; color:var(--parchment-dim); font-weight:700; }
+
+  .point-box{ text-align:center; margin:0 0 16px; }
+  .point-info{ font-size:11.5px; color:var(--parchment-dim); margin-bottom:8px; line-height:1.5; }
+  .point-info b{ color:var(--neon-green); font-family:var(--font-num); font-size:14px; }
+  .point-btn{
+    padding:10px 20px; border-radius:10px; border:1.5px solid var(--neon-green);
+    background:transparent; color:var(--neon-green); font-family:var(--font-body);
+    font-weight:700; font-size:12.5px; cursor:pointer; transition:all 0.2s ease;
+  }
+  .point-btn:hover:not(:disabled){ background:rgba(57,255,138,0.12); }
+  .point-btn.armed{
+    background:var(--neon-green); color:#04220f;
+    box-shadow:0 0 16px rgba(57,255,138,0.7);
+  }
+  .point-btn:disabled{ opacity:0.35; cursor:default; border-color:var(--steel); color:var(--steel); }
+
+  .enhance-btn{
+    display:block; width:100%; padding:16px; font-family:var(--font-body); font-size:16px; font-weight:900;
+    color:#241505; background:linear-gradient(180deg, var(--gold-bright), var(--ember)); border:none; border-radius:12px; cursor:pointer;
+    box-shadow:0 8px 0 #a35a1c, 0 14px 24px rgba(255,122,60,0.25); transition:transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .enhance-btn:active{ transform:translateY(6px); box-shadow:0 2px 0 #a35a1c, 0 6px 14px rgba(255,122,60,0.2); }
+  .enhance-btn:disabled{ background:linear-gradient(180deg,#6b5a86,#3a2f4d); color:#e9dfff; box-shadow:0 8px 0 #241c33; cursor:default; }
+  .enhance-btn:disabled:active{ transform:none; }
+
+  .stats-bar{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:18px; }
+  .stat{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px 4px; text-align:center; }
+  .stat .num{ font-family:var(--font-num); font-size:17px; font-weight:700; }
+  .stat .lbl{ font-size:9.5px; color:var(--parchment-dim); margin-top:2px; }
+  .stat.destroy .num{ color:var(--crimson); }
+  .stat.best .num{ color:var(--gold-bright); }
+
+  .log-panel{ margin-top:18px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 14px; max-height:160px; overflow-y:auto; }
+  .log-panel h2{ font-size:11px; letter-spacing:0.2em; color:var(--parchment-dim); margin:2px 0 8px; font-weight:700; }
+  .log-entry{ font-size:12.5px; padding:5px 0; border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:8px; color:var(--parchment-dim); }
+  .log-entry:first-child{ border-top:none; }
+  .log-entry.success .tag{ color:var(--gold-bright); }
+  .log-entry.destroy .tag{ color:var(--crimson); }
+  .log-entry.destroy{ color:#f0a5a5; }
+
+  footer{ text-align:center; margin-top:22px; font-size:10.5px; color:#4d4560; }
+
+  #fxCanvas{ position:fixed; inset:0; z-index:50; pointer-events:none; }
+  .flash-overlay{ position:fixed; inset:0; z-index:40; pointer-events:none; opacity:0; background:var(--gold-bright); }
+  .flash-overlay.play{ animation:flashfx 0.5s ease-out; }
+  .flash-overlay.destroy-flash{ background:var(--crimson); }
+  .flash-overlay.destroy-flash.play{ animation:flashfx 0.7s ease-out; }
+  @keyframes flashfx{ 0%{opacity:0.55;} 100%{opacity:0;} }
+
+  .float-text{ position:fixed; z-index:60; font-family:var(--font-display); font-weight:700; pointer-events:none; text-shadow:0 2px 10px rgba(0,0,0,0.6); animation:floatup 1.3s ease-out forwards; white-space:nowrap; left:50%; transform:translateX(-50%); }
+  @keyframes floatup{ 0%{opacity:0; transform:translate(-50%, 10px) scale(0.85);} 15%{opacity:1; transform:translate(-50%, -10px) scale(1.05);} 80%{opacity:1; transform:translate(-50%, -55px) scale(1);} 100%{opacity:0; transform:translate(-50%, -75px) scale(0.95);} }
+
+  body.shake-screen{ animation:screenshake 0.5s; }
+  @keyframes screenshake{ 10%,90%{transform:translateX(-1px);} 20%,80%{transform:translateX(2px);} 30%,50%,70%{transform:translateX(-5px);} 40%,60%{transform:translateX(5px);} }
+</style>
+</head>
+<body>
+
+<canvas id="fxCanvas"></canvas>
+<div class="flash-overlay" id="flashOverlay"></div>
+
+<div class="stage">
+  <header>
+    <div class="eyebrow">STRENGTHENING CHAMBER</div>
+    <h1>강화의 방</h1>
+    <p>비용 0원 · 무제한 시도 · 실패 시 확률적으로 하락</p>
+  </header>
+
+  <div class="forge-wrap">
+    <div class="rune-ring" id="ringOuter"></div>
+    <div class="rune-ring inner" id="ringInner"></div>
+    <div class="rune-glow" id="ringGlow"></div>
+    <div class="card" id="card">
+      <div class="tier-label" id="tierLabel">COMMON</div>
+      <div class="name">엄준오</div>
+      <div class="role">forward · No.10</div>
+      <div class="ovr">OVR <b id="ovrVal">71</b></div>
+      <div class="level-badge" id="levelBadge">+1</div>
+      <div class="stars" id="stars"></div>
+    </div>
+  </div>
+
+  <div class="prob-info">
+    <div class="chance">성공 확률 <b id="successRateTxt">100%</b></div>
+  </div>
+  <button class="fail-toggle" id="failToggle">실패 시 복구 확률 보기 ▾</button>
+  <div class="fail-breakdown" id="failBreakdown"></div>
+
+  <div class="point-box">
+    <div class="point-info">⚡ 보유 강화포인트 <b id="pointCount">0</b>개 &nbsp;·&nbsp; 시도 50회마다 1개 획득 · 사용 시 성공확률 +10%p</div>
+    <button class="point-btn" id="pointBtn" disabled>강화포인트 사용</button>
+  </div>
+
+  <button class="enhance-btn" id="enhanceBtn">⚒ 강화하기</button>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="num" id="statTries">0</div><div class="lbl">시도</div></div>
+    <div class="stat"><div class="num" id="statSuccess">0</div><div class="lbl">성공</div></div>
+    <div class="stat destroy"><div class="num" id="statDestroy">0</div><div class="lbl">1강 복귀</div></div>
+    <div class="stat best"><div class="num" id="statBest">+1</div><div class="lbl">최고 기록</div></div>
+  </div>
+
+  <div class="log-panel">
+    <h2>강화 기록</h2>
+    <div id="logList"></div>
+  </div>
+
+  <footer>13강을 달성하면 엄준오는 궁극 강화가 완성됩니다.</footer>
+</div>
+
+<script>
+(function(){
+  const successRates = {1:1.00,2:0.81,3:0.64,4:0.50,5:0.26,6:0.15,7:0.07,8:0.05,9:0.04,10:0.03,11:0.02,12:0.01};
+  const ovrGain = {1:0,2:1,3:2,4:4,5:6,6:8,7:11,8:15,9:17,10:19,11:21,12:24,13:27};
+  const BASE_OVR = 71;
+  const MAX_LEVEL = 13;
+
+  const restoration = {
+    1:[{level:1,prob:1.00}],
+    2:[{level:1,prob:1.00}],
+    3:[{level:1,prob:0.65},{level:2,prob:0.35}],
+    4:[{level:1,prob:0.55},{level:2,prob:0.45}],
+    5:[{level:1,prob:0.35},{level:2,prob:0.40},{level:3,prob:0.25}],
+    6:[{level:1,prob:0.10},{level:2,prob:0.32},{level:3,prob:0.36},{level:4,prob:0.22}],
+    7:[{level:1,prob:0.04},{level:2,prob:0.10},{level:3,prob:0.30},{level:4,prob:0.35},{level:5,prob:0.21}],
+    8:[{level:1,prob:0.02},{level:2,prob:0.04},{level:3,prob:0.10},{level:4,prob:0.28},{level:5,prob:0.35},{level:6,prob:0.21}],
+    9:[{level:1,prob:0.01},{level:2,prob:0.02},{level:3,prob:0.04},{level:4,prob:0.10},{level:5,prob:0.28},{level:6,prob:0.34},{level:7,prob:0.21}],
+    10:[{level:1,prob:0.01},{level:2,prob:0.01},{level:3,prob:0.02},{level:4,prob:0.04},{level:5,prob:0.10},{level:6,prob:0.28},{level:7,prob:0.34},{level:8,prob:0.20}],
+    11:[{level:1,prob:0.01},{level:2,prob:0.01},{level:3,prob:0.01},{level:4,prob:0.02},{level:5,prob:0.04},{level:6,prob:0.09},{level:7,prob:0.28},{level:8,prob:0.34},{level:9,prob:0.20}],
+    12:[{level:1,prob:0.01},{level:2,prob:0.01},{level:3,prob:0.01},{level:4,prob:0.01},{level:5,prob:0.02},{level:6,prob:0.03},{level:7,prob:0.09},{level:8,prob:0.28},{level:9,prob:0.34},{level:10,prob:0.20}]
+  };
+
+  function tierOf(level){
+    if(level<=3) return {label:'COMMON', color:'#c9a15a', border:'#a97a34', bg:'linear-gradient(160deg,#3a2a16,#1c140a)'};
+    if(level<=6) return {label:'RARE', color:'#9fd0ff', border:'#5c86a8', bg:'linear-gradient(160deg,#1c2a3a,#0d1620)'};
+    if(level<=9) return {label:'HEROIC', color:'#ffd066', border:'#e8a93b', bg:'linear-gradient(160deg,#3a2a10,#20150a)'};
+    if(level<=12) return {label:'LEGEND', color:'#c9a8ff', border:'#8a5cff', bg:'linear-gradient(160deg,#241238,#120a20)'};
+    return {label:'ULTIMATE', color:'#ffe9a8', border:'#ffd066', bg:'linear-gradient(135deg,#4a1c02,#2a0a1c,#0a1c3a,#3a2a02)'};
+  }
+
+  const state = { level:1, tries:0, success:0, fail:0, destroy:0, best:1, points:0, armed:false };
+  const POINT_BONUS = 0.10;
+  const POINT_EVERY = 50;
+
+  const card = document.getElementById('card');
+  const levelBadge = document.getElementById('levelBadge');
+  const tierLabel = document.getElementById('tierLabel');
+  const ovrVal = document.getElementById('ovrVal');
+  const starsEl = document.getElementById('stars');
+  const successRateTxt = document.getElementById('successRateTxt');
+  const enhanceBtn = document.getElementById('enhanceBtn');
+  const statTries = document.getElementById('statTries');
+  const statSuccess = document.getElementById('statSuccess');
+  const statDestroy = document.getElementById('statDestroy');
+  const statBest = document.getElementById('statBest');
+  const logList = document.getElementById('logList');
+  const flashOverlay = document.getElementById('flashOverlay');
+  const ringGlow = document.getElementById('ringGlow');
+  const ringOuter = document.getElementById('ringOuter');
+  const ringInner = document.getElementById('ringInner');
+  const failToggle = document.getElementById('failToggle');
+  const failBreakdown = document.getElementById('failBreakdown');
+  const pointCount = document.getElementById('pointCount');
+  const pointBtn = document.getElementById('pointBtn');
+
+  function renderFailBreakdown(){
+    const dist = restoration[state.level];
+    if(!dist){ failBreakdown.innerHTML = '<h3>최고 등급입니다</h3>'; return; }
+    let html = '<h3>+' + state.level + ' → +' + (state.level+1) + ' 실패 시 복구 강화</h3>';
+    dist.slice().sort((a,b)=>a.level-b.level).forEach(d=>{
+      html += '<div class="row"><span>+'+d.level+' 강으로 복구</span><b>'+Math.round(d.prob*100)+'%</b></div>';
+    });
+    failBreakdown.innerHTML = html;
+  }
+
+  failToggle.addEventListener('click', ()=>{
+    failBreakdown.classList.toggle('open');
+    failToggle.textContent = failBreakdown.classList.contains('open') ? '실패 시 복구 확률 접기 ▴' : '실패 시 복구 확률 보기 ▾';
+  });
+
+  pointBtn.addEventListener('click', ()=>{
+    if(state.level>=MAX_LEVEL) return;
+    if(!state.armed && state.points<=0) return;
+    state.armed = !state.armed;
+    render();
+  });
+
+  function render(){
+    const t = tierOf(state.level);
+    card.style.setProperty('--card-border', t.border);
+    card.style.setProperty('--card-bg', t.bg);
+    card.style.setProperty('--tier-color', t.color);
+    tierLabel.textContent = t.label;
+    tierLabel.style.color = t.color;
+    levelBadge.textContent = '+' + state.level;
+    ovrVal.textContent = BASE_OVR + ovrGain[state.level];
+
+    starsEl.innerHTML = '';
+    for(let i=1;i<=MAX_LEVEL;i++){
+      const s = document.createElement('span');
+      s.textContent = '★';
+      if(i<=state.level) s.classList.add('filled');
+      starsEl.appendChild(s);
+    }
+
+    const glowSize = 6 + state.level*3;
+    card.style.setProperty('--card-glow-size', glowSize+'px');
+    card.style.setProperty('--card-glow-color', t.border+'aa');
+    ringGlow.style.setProperty('--glow', Math.min(0.12 + state.level*0.045, 0.65));
+    const spinSpeed = Math.max(18 - state.level*1.1, 5);
+    ringOuter.style.animationDuration = spinSpeed+'s';
+    ringInner.style.animationDuration = (spinSpeed*0.65)+'s';
+
+    if(state.level>=MAX_LEVEL){
+      successRateTxt.textContent = '완성';
+      enhanceBtn.textContent = '🏆 궁극 강화 완성';
+      enhanceBtn.disabled = true;
+      failToggle.style.display = 'none';
+      failBreakdown.classList.remove('open');
+    } else {
+      const effectiveRate = Math.min(successRates[state.level] + (state.armed ? POINT_BONUS : 0), 1);
+      successRateTxt.textContent = Math.round(effectiveRate*100)+'%' + (state.armed ? ' ⚡' : '');
+      enhanceBtn.textContent = '⚒ 강화하기 (+'+state.level+' → +'+(state.level+1)+')';
+      enhanceBtn.disabled = false;
+      failToggle.style.display = 'block';
+    }
+    renderFailBreakdown();
+
+    pointCount.textContent = state.points;
+    pointBtn.disabled = state.level>=MAX_LEVEL || (!state.armed && state.points<=0);
+    pointBtn.textContent = state.armed ? '⚡ 포인트 적용됨 (해제하기)' : '강화포인트 사용';
+    pointBtn.classList.toggle('armed', state.armed);
+    card.classList.toggle('point-armed', state.armed);
+
+    statTries.textContent = state.tries;
+    statSuccess.textContent = state.success;
+    statDestroy.textContent = state.destroy;
+    statBest.textContent = '+' + state.best;
+  }
+
+  function addLog(kind, text){
+    const row = document.createElement('div');
+    row.className = 'log-entry ' + kind;
+    const icon = kind==='success' ? '✨' : (kind==='destroy' ? '💥' : '⬇️');
+    row.innerHTML = '<span class="tag">'+icon+'</span><span>'+text+'</span>';
+    logList.insertBefore(row, logList.firstChild);
+    while(logList.children.length > 30) logList.removeChild(logList.lastChild);
+  }
+
+  let actx;
+  function ctx(){ if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); } return actx; }
+  function tone(freq, start, dur, type, vol){
+    const c = ctx();
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, c.currentTime+start);
+    g.gain.setValueAtTime(0, c.currentTime+start);
+    g.gain.linearRampToValueAtTime(vol||0.2, c.currentTime+start+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime+start+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(c.currentTime+start);
+    o.stop(c.currentTime+start+dur+0.05);
+  }
+  function playSuccess(level){
+    const base = 440 + level*16;
+    tone(base, 0, 0.18, 'triangle', 0.18);
+    tone(base*1.25, 0.08, 0.18, 'triangle', 0.16);
+    tone(base*1.5, 0.16, 0.3, 'triangle', 0.2);
+    if(level>=MAX_LEVEL) tone(base*2, 0.26, 0.5, 'sine', 0.15);
+  }
+  function playDrop(severity){
+    const c = ctx();
+    tone(300, 0, 0.15, 'sawtooth', 0.16);
+    tone(180, 0.1, 0.2, 'sawtooth', 0.16);
+    if(severity>=2) tone(90, 0.2, 0.5, 'sawtooth', 0.2);
+    const bufferSize = c.sampleRate * (0.15 + severity*0.08);
+    const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+    const noise = c.createBufferSource();
+    noise.buffer = buffer;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.15 + severity*0.03, c.currentTime);
+    noise.connect(g); g.connect(c.destination);
+    noise.start();
+  }
+
+  const canvas = document.getElementById('fxCanvas');
+  const gfx = canvas.getContext('2d');
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let particles = [];
+  function spawnBurst(cx, cy, opts){
+    opts = opts || {};
+    const count = opts.count || 60;
+    const colors = opts.colors || ['#ffd066','#ff7a3c','#fff3c4','#e8a93b'];
+    for(let i=0;i<count;i++){
+      const angle = Math.random()*Math.PI*2;
+      const speed = 2 + Math.random()*(opts.speed||6);
+      particles.push({ x:cx, y:cy, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed - (opts.upward?2:0),
+        life:1, decay:0.010+Math.random()*0.012, size:2+Math.random()*3.5,
+        color:colors[Math.floor(Math.random()*colors.length)], gravity:opts.gravity!==undefined?opts.gravity:0.05, shape:'circle' });
+    }
+  }
+  function spawnShatter(cx, cy, intensity){
+    const colors = ['#e14b4b','#7a1f1f','#3a3345','#1a1220'];
+    const count = 40 + intensity*15;
+    for(let i=0;i<count;i++){
+      const angle = Math.random()*Math.PI*2;
+      const speed = 1 + Math.random()*(3+intensity);
+      particles.push({ x:cx, y:cy, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed - 3,
+        life:1, decay:0.008+Math.random()*0.01, size:2+Math.random()*5,
+        color:colors[Math.floor(Math.random()*colors.length)], gravity:0.15, shape:'shard', rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.3 });
+    }
+  }
+
+  function tick(){
+    gfx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.vy += p.gravity; p.life -= p.decay;
+      if(p.rot!==undefined) p.rot += p.vr;
+      gfx.globalAlpha = Math.max(p.life,0);
+      gfx.fillStyle = p.color;
+      if(p.shape==='shard'){
+        gfx.save(); gfx.translate(p.x,p.y); gfx.rotate(p.rot||0);
+        gfx.fillRect(-p.size/2,-p.size*1.4/2,p.size,p.size*1.4);
+        gfx.restore();
+      } else {
+        gfx.beginPath(); gfx.arc(p.x,p.y,p.size,0,Math.PI*2); gfx.fill();
+      }
+    });
+    gfx.globalAlpha = 1;
+    particles = particles.filter(p=>p.life>0 && p.y < canvas.height+50);
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  function cardCenter(){
+    const r = card.getBoundingClientRect();
+    return { x: r.left + r.width/2, y: r.top + r.height/2 };
+  }
+  function floatText(text, color){
+    const r = card.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'float-text';
+    el.style.top = (r.top - 10) + 'px';
+    el.style.fontSize = '24px';
+    el.style.color = color;
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 1400);
+  }
+  function flash(kind){
+    flashOverlay.className = 'flash-overlay' + (kind==='destroy' ? ' destroy-flash' : '');
+    void flashOverlay.offsetWidth;
+    flashOverlay.classList.add('play');
+    setTimeout(()=>flashOverlay.classList.remove('play'), 700);
+  }
+  function screenShake(){
+    document.body.classList.remove('shake-screen');
+    void document.body.offsetWidth;
+    document.body.classList.add('shake-screen');
+    setTimeout(()=>document.body.classList.remove('shake-screen'), 500);
+  }
+
+  function weightedPick(dist){
+    let r = Math.random();
+    let acc = 0;
+    for(const d of dist){ acc += d.prob; if(r <= acc) return d.level; }
+    return dist[dist.length-1].level;
+  }
+
+  function enhance(){
+    if(state.level>=MAX_LEVEL) return;
+    state.tries++;
+    const usingPoint = state.armed;
+    const rate = Math.min(successRates[state.level] + (usingPoint ? POINT_BONUS : 0), 1);
+    const roll = Math.random();
+    const c = cardCenter();
+
+    if(usingPoint){
+      state.points--;
+      state.armed = false;
+    }
+
+    if(roll < rate){
+      state.level++;
+      state.success++;
+      if(state.level>state.best) state.best = state.level;
+      card.classList.remove('shake','crack');
+      card.classList.add('pulse');
+      setTimeout(()=>card.classList.remove('pulse'), 600);
+      flash('success');
+      const extra = state.level>=MAX_LEVEL;
+      spawnBurst(c.x, c.y, {count: extra?150:60, speed: extra?9:6, upward:true});
+      if(extra) setTimeout(()=>spawnBurst(c.x, c.y-30, {count:110, speed:8, colors:['#ffe9a8','#ffd066','#fff3c4','#c9a8ff','#e14b4b']}), 200);
+      floatText(extra ? '궁극 강화 완성! +13!' : ('강화 성공! +'+state.level), extra ? '#ffe9a8' : '#ffd066');
+      playSuccess(state.level);
+      addLog('success', '+'+(state.level-1)+' → +'+state.level+' 강화 성공! (OVR '+(BASE_OVR+ovrGain[state.level])+')'+(extra?' — 궁극 완성':'')+(usingPoint?' [포인트 사용]':''));
+    } else {
+      state.fail++;
+      const dist = restoration[state.level];
+      const target = weightedPick(dist);
+      const fromLevel = state.level;
+      const severity = fromLevel - target;
+      state.level = target;
+      if(target===1) state.destroy++;
+
+      card.classList.remove('pulse');
+      card.classList.add('crack');
+      setTimeout(()=>card.classList.remove('crack'), 600);
+      flash('destroy');
+      if(severity>=2) screenShake();
+      spawnShatter(c.x, c.y, severity);
+      floatText(target===1 ? '파괴… +1로 복구' : ('강화 실패 — +'+target+'로 하락'), target===1 ? '#e14b4b' : '#ff9d6e');
+      playDrop(severity);
+      addLog('destroy', '+'+fromLevel+' 강화 실패 — +'+target+'강으로 복구되었습니다.'+(usingPoint?' [포인트 사용]':''));
+    }
+
+    if(state.tries % POINT_EVERY === 0){
+      state.points++;
+      addLog('success', '⚡ 강화 '+POINT_EVERY+'회 달성! 강화포인트를 1개 획득했습니다. (보유 '+state.points+'개)');
+    }
+    render();
+  }
+
+  enhanceBtn.addEventListener('click', enhance);
+  render();
+  addLog('success', '엄준오 카드가 강화 준비를 마쳤습니다. (+1, OVR '+BASE_OVR+')');
+})();
+</script>
+</body>
+</html>
